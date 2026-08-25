@@ -177,7 +177,7 @@ class TimesJobsScraper:
                     proxy_url = f"http://{group_str}:{apify_proxy_password}@proxy.apify.com:8000"
                     Actor.log.info(f"Using Apify Proxy with groups: {groups}")
         
-        async with httpx.AsyncClient(proxy=proxy_url, timeout=30.0) as client:
+        async with httpx.AsyncClient(proxy=proxy_url, timeout=30.0, verify=False) as client:
             while len(all_jobs) < max_results and page <= max_pages:
                 search_url = await self.build_search_url(keywords, location, page)
                 Actor.log.info(f"Fetching page {page}: {search_url}")
