@@ -128,22 +128,30 @@ class TimesJobsScraper:
         try:
             soup = BeautifulSoup(html, 'lxml')
             
+            # Save a sample for debugging
+            Actor.log.info(f"HTML length: {len(html)} characters")
+            Actor.log.info(f"HTML preview: {html[:500]}")
+            
             # Try multiple selectors for job cards
             job_cards = (
                 soup.select('.clearfix.job-bx') or
                 soup.select('li.clearfix') or
                 soup.select('.job-bx') or
                 soup.select('[class*="job-"]') or
+                soup.select('article') or
                 soup.select('li')
             )
             
             Actor.log.info(f"Found {len(job_cards)} potential job cards")
             
-            for card in job_cards:
+            # If we found job cards, try to parse them
+            for i, card in enumerate(job_cards[:50]):  # Limit to first 50 for debugging
                 job = await self.parse_job_card(card)
                 if job:
                     jobs.append(job)
                     self.jobs_scraped += 1
+                    if i < 3:  # Log first few for debugging
+                        Actor.log.info(f"Sample job {i+1}: {job.get('jobTitle', 'N/A')}")
                     
         except Exception as e:
             Actor.log.exception(f"Error parsing search page: {e}")
