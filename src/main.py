@@ -169,8 +169,10 @@ class TimesJobsScraper:
         if self.proxy_config:
             if self.proxy_config.get('useApifyProxy'):
                 groups = self.proxy_config.get('apifyProxyGroups', ['RESIDENTIAL'])
-                proxy_url = Actor.create_proxy_url(groups)
-                Actor.log.info(f"Using Apify Proxy with groups: {groups}")
+                # For SDK 1.x, use environment variable approach or construct manually
+                from apify import Actor as ActorConfig
+                proxy_url = ActorConfig.get_apify_proxy_url()
+                Actor.log.info(f"Using Apify Proxy")
         
         async with httpx.AsyncClient(proxy=proxy_url, timeout=30.0) as client:
             while len(all_jobs) < max_results and page <= max_pages:
