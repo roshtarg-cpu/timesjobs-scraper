@@ -59,7 +59,7 @@ class TimesJobsScraper:
             await Actor.log.exception(f"Error fetching {url}: {e}")
             return None
     
-    def parse_job_card(self, card: BeautifulSoup) -> Optional[Dict]:
+    async def parse_job_card(self, card: BeautifulSoup) -> Optional[Dict]:
         """Parse a single job card element"""
         try:
             job = {}
@@ -140,7 +140,7 @@ class TimesJobsScraper:
             await Actor.log.info(f"Found {len(job_cards)} potential job cards")
             
             for card in job_cards:
-                job = self.parse_job_card(card)
+                job = await self.parse_job_card(card)
                 if job:
                     jobs.append(job)
                     self.jobs_scraped += 1
