@@ -56,7 +56,7 @@ class TimesJobsScraper:
             return response.text
             
         except Exception as e:
-            await Actor.log.exception(f"Error fetching {url}: {e}")
+            Actor.log.exception(f"Error fetching {url}: {e}")
             return None
     
     async def parse_job_card(self, card: BeautifulSoup) -> Optional[Dict]:
@@ -118,7 +118,7 @@ class TimesJobsScraper:
             return job if job.get('jobTitle') else None
             
         except Exception as e:
-            await Actor.log.warning(f"Error parsing job card: {e}")
+            Actor.log.warning(f"Error parsing job card: {e}")
             return None
     
     async def scrape_search_page(self, html: str) -> List[Dict]:
@@ -137,7 +137,7 @@ class TimesJobsScraper:
                 soup.select('li')
             )
             
-            await Actor.log.info(f"Found {len(job_cards)} potential job cards")
+            Actor.log.info(f"Found {len(job_cards)} potential job cards")
             
             for card in job_cards:
                 job = await self.parse_job_card(card)
@@ -146,7 +146,7 @@ class TimesJobsScraper:
                     self.jobs_scraped += 1
                     
         except Exception as e:
-            await Actor.log.exception(f"Error parsing search page: {e}")
+            Actor.log.exception(f"Error parsing search page: {e}")
         
         return jobs
     
@@ -162,7 +162,7 @@ class TimesJobsScraper:
         page = 1
         max_pages = (max_results // 20) + 1  # TimesJobs typically shows ~20 jobs per page
         
-        await Actor.log.info(f"Starting scrape: keywords='{keywords}', location='{location}', max_results={max_results}")
+        Actor.log.info(f"Starting scrape: keywords='{keywords}', location='{location}', max_results={max_results}")
         
         # Set up HTTP client with proxy if configured
         proxy_url = None
@@ -170,27 +170,27 @@ class TimesJobsScraper:
             if self.proxy_config.get('useApifyProxy'):
                 groups = self.proxy_config.get('apifyProxyGroups', ['RESIDENTIAL'])
                 proxy_url = Actor.create_proxy_url(groups)
-                await Actor.log.info(f"Using Apify Proxy with groups: {groups}")
+                Actor.log.info(f"Using Apify Proxy with groups: {groups}")
         
         async with httpx.AsyncClient(proxy=proxy_url, timeout=30.0) as client:
             while len(all_jobs) < max_results and page <= max_pages:
                 search_url = await self.build_search_url(keywords, location, page)
-                await Actor.log.info(f"Fetching page {page}: {search_url}")
+                Actor.log.info(f"Fetching page {page}: {search_url}")
                 
                 html = await self.fetch_page(search_url, client)
                 
                 if not html:
-                    await Actor.log.warning(f"Failed to fetch page {page}, stopping")
+                    Actor.log.warning(f"Failed to fetch page {page}, stopping")
                     break
                 
                 jobs = await self.scrape_search_page(html)
                 
                 if not jobs:
-                    await Actor.log.info(f"No jobs found on page {page}, stopping")
+                    Actor.log.info(f"No jobs found on page {page}, stopping")
                     break
                 
                 all_jobs.extend(jobs)
-                await Actor.log.info(f"Scraped {len(jobs)} jobs from page {page} (total: {len(all_jobs)})")
+                Actor.log.info(f"Scraped {len(jobs)} jobs from page {page} (total: {len(all_jobs)})")
                 
                 if len(jobs) < 10:  # If we get very few results, probably no more pages
                     break
@@ -205,7 +205,7 @@ class TimesJobsScraper:
 async def main():
     """Main entry point for the Apify Actor"""
     async with Actor:
-        await Actor.log.info("TimesJobs Scraper starting...")
+        Actor.log.info("TimesJobs Scraper starting...")
         
         # Get input
         actor_input = await Actor.get_input() or {}
@@ -216,7 +216,7 @@ async def main():
         experience_level = actor_input.get('experienceLevel', '')
         proxy_config = actor_input.get('proxyConfig')
         
-        await Actor.log.info(f"Input: keywords={search_keywords}, location={search_location}, max={max_results}")
+        Actor.log.info(f"Input: keywords={search_keywords}, location={search_location}, max={max_results}")
         
         # Initialize scraper
         scraper = TimesJobsScraper(proxy_config=proxy_config)
@@ -229,16 +229,16 @@ async def main():
             experience_level=experience_level
         )
         
-        await Actor.log.info(f"Scraped {len(jobs)} total jobs")
+        Actor.log.info(f"Scraped {len(jobs)} total jobs")
         
         # Push to dataset
         if jobs:
             await Actor.push_data(jobs)
-            await Actor.log.info(f"✅ Successfully pushed {len(jobs)} jobs to dataset")
+            Actor.log.info(f"✅ Successfully pushed {len(jobs)} jobs to dataset")
         else:
-            await Actor.log.warning("⚠️ No jobs found - check your search parameters or site structure may have changed")
+            Actor.log.warning("⚠️ No jobs found - check your search parameters or site structure may have changed")
         
-        await Actor.log.info("Scraper finished")
+        Actor.log.info("Scraper finished")
 
 
 if __name__ == "__main__":
