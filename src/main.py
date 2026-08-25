@@ -168,11 +168,14 @@ class TimesJobsScraper:
         proxy_url = None
         if self.proxy_config:
             if self.proxy_config.get('useApifyProxy'):
-                groups = self.proxy_config.get('apifyProxyGroups', ['RESIDENTIAL'])
-                # For SDK 1.x, use environment variable approach or construct manually
-                from apify import Actor as ActorConfig
-                proxy_url = ActorConfig.get_apify_proxy_url()
-                Actor.log.info(f"Using Apify Proxy")
+                # For SDK 1.x, construct proxy URL from environment
+                import os
+                apify_proxy_password = os.getenv('APIFY_PROXY_PASSWORD')
+                if apify_proxy_password:
+                    groups = self.proxy_config.get('apifyProxyGroups', ['RESIDENTIAL'])
+                    group_str = ','.join([f"groups-{g}" for g in groups])
+                    proxy_url = f"http://{group_str}:{apify_proxy_password}@proxy.apify.com:8000"
+                    Actor.log.info(f"Using Apify Proxy with groups: {groups}")
         
         async with httpx.AsyncClient(proxy=proxy_url, timeout=30.0) as client:
             while len(all_jobs) < max_results and page <= max_pages:
