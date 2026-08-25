@@ -1,0 +1,52 @@
+{
+  "title": "TimesJobs Scraper Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "searchKeywords": {
+      "title": "Search Keywords",
+      "type": "string",
+      "description": "Job keywords to search for (e.g., 'Python Developer', 'Data Scientist', 'Sales Manager')",
+      "editor": "textfield",
+      "prefill": "Python Developer"
+    },
+    "searchLocation": {
+      "title": "Search Location",
+      "type": "string",
+      "description": "Job location to filter by (e.g., 'Delhi', 'Bangalore', 'Mumbai', 'Remote')",
+      "editor": "textfield",
+      "prefill": "Delhi"
+    },
+    "maxResults": {
+      "title": "Maximum Results",
+      "type": "integer",
+      "description": "Maximum number of job listings to scrape",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 50,
+      "prefill": 50
+    },
+    "experienceLevel": {
+      "title": "Experience Level",
+      "type": "string",
+      "description": "Filter by experience level (leave empty for all)",
+      "editor": "select",
+      "enum": ["", "0-2", "2-5", "5-10", "10+"],
+      "enumTitles": ["All Levels", "0-2 Years", "2-5 Years", "5-10 Years", "10+ Years"],
+      "default": "",
+      "prefill": ""
+    },
+    "proxyConfig": {
+      "title": "Proxy Configuration",
+      "type": "object",
+      "description": "Proxy settings for the scraper",
+      "editor": "proxy",
+      "default": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": ["RESIDENTIAL"]
+      }
+    }
+  },
+  "required": ["searchKeywords"]
+}

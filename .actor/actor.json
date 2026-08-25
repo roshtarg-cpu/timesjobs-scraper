@@ -1,0 +1,71 @@
+{
+  "actorSpecification": 1,
+  "name": "timesjobs-scraper",
+  "title": "TimesJobs Scraper - AI-Ready Job Data Extractor",
+  "version": "1.0.0",
+  "description": "Extract job listings from TimesJobs.com with full details. Perfect for ChatGPT, Claude AI agents, and MCP integrations. Get titles, companies, locations, salaries, and more.",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "./Dockerfile",
+  "output": {
+    "actorOutputSchemaVersion": 1,
+    "properties": {
+      "jobTitle": {
+        "type": "string",
+        "title": "Job Title",
+        "description": "The job position title",
+        "template": "{{{jobTitle}}}"
+      },
+      "companyName": {
+        "type": "string",
+        "title": "Company Name",
+        "description": "Name of the hiring company",
+        "template": "{{{companyName}}}"
+      },
+      "location": {
+        "type": "string",
+        "title": "Location",
+        "description": "Job location",
+        "template": "{{{location}}}"
+      },
+      "experience": {
+        "type": "string",
+        "title": "Experience Required",
+        "description": "Required experience in years",
+        "template": "{{{experience}}}"
+      },
+      "salary": {
+        "type": "string",
+        "title": "Salary",
+        "description": "Salary range if available",
+        "template": "{{{salary}}}"
+      },
+      "skills": {
+        "type": "string",
+        "title": "Required Skills",
+        "description": "Skills required for the job",
+        "template": "{{{skills}}}"
+      },
+      "jobDescription": {
+        "type": "string",
+        "title": "Job Description",
+        "description": "Full job description text",
+        "template": "{{{jobDescription}}}"
+      },
+      "postedDate": {
+        "type": "string",
+        "title": "Posted Date",
+        "description": "When the job was posted",
+        "template": "{{{postedDate}}}"
+      },
+      "jobLink": {
+        "type": "string",
+        "title": "Job Link",
+        "description": "Direct link to the job posting",
+        "template": "{{{jobLink}}}"
+      }
+    }
+  }
+}
